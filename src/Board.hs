@@ -1,23 +1,23 @@
 module Board
-    ( Board(..)
-    , boardDealer
-    , boardSmallBlind
-    , boardBigBlind
-    , makeBoard
+  ( Board (..),
+    boardDealer,
+    boardSmallBlind,
+    boardBigBlind,
+    makeBoard,
     )
 where
 
-import           Deck
-import           Player
+import Deck
+import Player
 
-data Board = Board {
-    common :: [Card],
+data Board = Board
+  { common :: [Card],
     remaining :: [Card],
     players :: [Player]
 }
 
 instance Show Board where
-    show board = show $ players board
+  show = show . players
 
 getPlayerByRole :: Board -> Role -> Player
 getPlayerByRole board playerRole =
@@ -36,11 +36,11 @@ makeBoard :: Int -> Int -> Int -> Board
 makeBoard n cash seed = makeNewBoard deck cards (take n [Dealer ..]) players
   where
     (deck, cards) = drawCards (shuffleDeck makeFullDeck seed) 2
-    players       = []
+    players = []
     makeNewBoard :: [Card] -> [Card] -> [Role] -> [Player] -> Board
     makeNewBoard deck cards [] players =
-        Board { common = deck, remaining = cards, players = reverse players }
+      Board {common = deck, remaining = cards, players = reverse players}
     makeNewBoard deck cards (r : rs) players =
         let (playerHand, tmpDeck) = drawCards deck 2
-            newPlayer = Player { hand = playerHand, role = r, cash = cash }
-        in  makeNewBoard tmpDeck cards rs (newPlayer : players)
+          newPlayer = Player {hand = playerHand, role = r, cash = cash}
+       in makeNewBoard tmpDeck cards rs (newPlayer : players)

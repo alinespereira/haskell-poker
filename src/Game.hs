@@ -1,22 +1,21 @@
 module Game where
 
-import           Data.List
-import           Data.Maybe                     ( fromJust )
-
-import           Deck
-import           Score
-import           Player
-import           Board
+import Board
+import Data.List
+import Data.Maybe (fromJust)
+import Deck
+import Player
+import Score
 
 data Stage = CompulsoryBets | PreFlop | Flop | Turn | River | Showdown
-    deriving (Show, Eq)
+  deriving (Show, Eq)
 
 stagesList :: [Stage]
 stagesList = [CompulsoryBets, PreFlop, Flop, Turn, River, Showdown]
 
 instance Enum Stage where
-    toEnum n = stagesList !! (n `mod` length stagesList)
-    fromEnum face = fromJust $ elemIndex face stagesList
+  toEnum n = stagesList !! (n `mod` length stagesList)
+  fromEnum face = fromJust $ elemIndex face stagesList
 
 choose :: [a] -> Int -> [[a]]
 choose xs n = filter ((n ==) . length) $ subsequences xs

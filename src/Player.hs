@@ -1,33 +1,32 @@
 module Player
-    ( Role(..)
-    , Player(..)
-    )
+  ( Role (..),
+    Player (..),
+  )
 where
 
-
-import           Deck                           ( Card )
-import           Data.Maybe
+import Data.Maybe
+import Deck (Card)
 
 data Role = Dealer | SmallBlind | BigBlind | OnlyPlayer
-    deriving (Show, Eq)
+  deriving (Show, Eq)
 
 instance Enum Role where
-    toEnum n = case n of
-        0 -> Dealer
-        1 -> SmallBlind
-        2 -> BigBlind
-        _ -> OnlyPlayer
-    fromEnum role = case role of
-        Dealer     -> 0
-        SmallBlind -> 1
-        BigBlind   -> 2
-        _          -> 3
+  toEnum n = case n of
+    0 -> Dealer
+    1 -> SmallBlind
+    2 -> BigBlind
+    _ -> OnlyPlayer
+  fromEnum role = case role of
+    Dealer -> 0
+    SmallBlind -> 1
+    BigBlind -> 2
+    _ -> 3
 
 data Player = Player
-    { hand :: [Card]
-    , role :: Role
-    , cash :: Int
-    }
+  { hand :: [Card],
+    role :: Role,
+    cash :: Int
+  }
 
 instance Show Player where
-    show (Player _ role cash) = show role ++ ": $" ++ show cash
+  show (Player _ role cash) = show role ++ ": $" ++ show cash
