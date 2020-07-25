@@ -4,7 +4,8 @@ module Board
     boardSmallBlind,
     boardBigBlind,
     makeBoard,
-    )
+    addPlayer,
+  )
 where
 
 import Deck
@@ -14,14 +15,14 @@ data Board = Board
   { common :: [Card],
     remaining :: [Card],
     players :: [Player]
-}
+  }
 
 instance Show Board where
   show = show . players
 
 getPlayerByRole :: Board -> Role -> Player
 getPlayerByRole board playerRole =
-    head $ filter (\player -> role player == playerRole) (players board)
+  head $ filter (\player -> role player == playerRole) (players board)
 
 boardDealer :: Board -> Player
 boardDealer = flip getPlayerByRole Dealer
@@ -32,15 +33,24 @@ boardSmallBlind = flip getPlayerByRole SmallBlind
 boardBigBlind :: Board -> Player
 boardBigBlind = flip getPlayerByRole BigBlind
 
-makeBoard :: Int -> Int -> Int -> Board
-makeBoard n cash seed = makeNewBoard deck cards (take n [Dealer ..]) players
+makePlayer :: Role -> Int -> [Card] -> ([Card], Player)
+makePlayer role cash deck =
+  let (hand, newDeck) = drawCards deck 2
+      player = Player {hand = hand, role = role, cash = cash}
+   in (newDeck, player)
+
+addPlayer :: Role -> Int -> Board -> Board
+addPlayer role cash board =
+  let deck = remaining board
+      (playerHand, newDeck) = drawCards deck 2
+      newPlayer = Player {hand = playerHand, role = role, cash = cash}
+   in Board
+        { common = common board,
+          remaining = newDeck,
+          players = players board ++ [newPlayer]
+        }
+
+makeBoard :: Int -> Board
+makeBoard seed = Board {common = common, remaining = remaining, players = []}
   where
-    (deck, cards) = drawCards (shuffleDeck makeFullDeck seed) 2
-    players = []
-    makeNewBoard :: [Card] -> [Card] -> [Role] -> [Player] -> Board
-    makeNewBoard deck cards [] players =
-      Board {common = deck, remaining = cards, players = reverse players}
-    makeNewBoard deck cards (r : rs) players =
-        let (playerHand, tmpDeck) = drawCards deck 2
-          newPlayer = Player {hand = playerHand, role = r, cash = cash}
-       in makeNewBoard tmpDeck cards rs (newPlayer : players)
+    (common, remaining) = drawCards (shuffleDeck makeFullDeck seed) 2
